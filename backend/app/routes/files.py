@@ -3,13 +3,13 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from app.utils.sanitize import sanitize_id
 import os
 
 from azure.search.documents.aio import SearchClient
 from azure.search.documents.models import QueryType
 from azure.core.credentials import AzureKeyCredential
 
+from app.utils.sanitize import sanitize_id
 from app.services.blob import list_files_in_blob
 
 load_dotenv()
@@ -39,13 +39,16 @@ async def list_files():
                 size = blob.size or 0
                 uploaded = blob.last_modified or datetime.utcnow()
 
+                # Sanitize the ID used for indexing chunks
                 safe_id = sanitize_id(filename)
-                filter_query = f"id eq '{safe_id}'"
 
+                # Perform search using search_text in ID field
                 search_result = await search_client.search(
-                    search_text="*",
-                    filter=filter_query,
+                    search_text=safe_id,
+                    search_fields=["id"],
                     query_type=QueryType.SIMPLE,
+                    select=["id"],
+                    top=1,
                 )
 
                 indexed = False
