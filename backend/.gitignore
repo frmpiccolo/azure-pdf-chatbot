@@ -38,22 +38,6 @@ backend/env/
 backend/venv/
 backend/.venv/
 
-# === Node.js / React / Frontend ===
-node_modules/
-dist/
-build/
-.npm/
-.npm-cache/
-.cache/
-.next/
-out/
-frontend/node_modules/
-frontend/dist/
-frontend/build/
-frontend/.next/
-frontend/.env
-frontend/.DS_Store
-
 # === VSCode ===
 .vscode/
 .history/
@@ -89,4 +73,3 @@ coverage/
 
 # === MacOS ===
 .DS_Store
-backend/.env
