@@ -1,36 +1,19 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import ChatPage from './pages/ChatPage'
+import UploadPage from './pages/UploadPage'
+import IndexStatusPage from './pages/IndexStatusPage'
+import Layout from './layouts/Layout'
 
-function App() {
-  const [file, setFile] = useState(null);
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-
-  const handleUpload = async () => {
-    if (!file) return;
-    const formData = new FormData();
-    formData.append("file", file);
-    await axios.post("http://localhost:8000/upload/", formData);
-  };
-
-  const handleAsk = async () => {
-    const res = await axios.post("http://localhost:8000/chat/", {
-      question,
-    });
-    setAnswer(res.data.answer);
-  };
-
+export default function App() {
   return (
-    <div>
-      <h1>Azure PDF Chatbot</h1>
-      <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-      <button onClick={handleUpload}>Upload</button>
-      <hr />
-      <input type="text" value={question} onChange={(e) => setQuestion(e.target.value)} />
-      <button onClick={handleAsk}>Ask</button>
-      <p>Answer: {answer}</p>
-    </div>
-  );
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<UploadPage />} />
+          <Route path="/status" element={<IndexStatusPage />} />
+          <Route path="/chat" element={<ChatPage />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  )
 }
-
-export default App;
