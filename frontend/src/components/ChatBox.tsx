@@ -5,17 +5,28 @@ import type { ChatMessage } from '../types/ChatMessage'
 export default function ChatBox() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
+  const [error, setError] = useState<string>('')
 
   const send = async () => {
     if (!input.trim()) return
 
+    setError('')
     const userMessage: ChatMessage = { role: 'user', content: input }
     setMessages((prev) => [...prev, userMessage])
     setInput('')
 
-    const answer = await askQuestion(input)
-    const botMessage: ChatMessage = { role: 'bot', content: answer }
-    setMessages((prev) => [...prev, botMessage])
+    try {
+      const answer = await askQuestion(input)
+      const botMessage: ChatMessage = { role: 'bot', content: answer }
+      setMessages((prev) => [...prev, botMessage])
+    } catch {
+      const botMessage: ChatMessage = {
+        role: 'bot',
+        content: 'Sorry, I could not get a response. Please try again later.',
+      }
+      setMessages((prev) => [...prev, botMessage])
+      setError('Something went wrong while processing your question.')
+    }
   }
 
   return (
@@ -49,6 +60,7 @@ export default function ChatBox() {
           Send
         </button>
       </div>
+      {error && <div className="text-error text-sm">{error}</div>}
     </div>
   )
 }

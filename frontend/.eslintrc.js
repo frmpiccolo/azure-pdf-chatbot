@@ -21,6 +21,7 @@ module.exports = {
     'prettier',
   ],
   rules: {
+    'react/react-in-jsx-scope': 'off',
     quotes: ['error', 'single'], // ⬅️ Reforça aspas simples
     'prettier/prettier': [
       'error',

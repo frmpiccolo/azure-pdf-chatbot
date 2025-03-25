@@ -6,36 +6,61 @@ export async function uploadFile(file: File): Promise<void> {
   const formData = new FormData()
   formData.append('file', file)
 
-  await fetch(`${API_URL}/upload/`, {
-    method: 'POST',
-    body: formData,
-  })
+  try {
+    const res = await fetch(`${API_URL}/upload/`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!res.ok) throw new Error('Upload failed')
+  } catch (error) {
+    console.error('Error uploading file:', error)
+    throw new Error('Upload failed. Please try again later.')
+  }
 }
 
 export async function getIndexStatus(): Promise<string> {
-  const res = await fetch(`${API_URL}/status`)
-  const data = await res.json()
-  return data.status || 'Unknown'
+  try {
+    const res = await fetch(`${API_URL}/status`)
+    if (!res.ok) throw new Error('Status not available')
+
+    const data = await res.json()
+    return data.status || 'Unknown'
+  } catch (error) {
+    console.error('Error fetching index status:', error)
+    return 'Unavailable'
+  }
 }
 
 export async function askQuestion(question: string): Promise<string> {
-  const res = await fetch(`${API_URL}/chat/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question }),
-  })
-  const data = await res.json()
-  return data.answer
+  try {
+    const res = await fetch(`${API_URL}/chat/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    })
+
+    if (!res.ok) throw new Error('Chat API error')
+
+    const data = await res.json()
+    return data.answer || 'No answer returned.'
+  } catch (error) {
+    console.error('Error asking question:', error)
+    return 'Sorry, an error occurred while getting the answer.'
+  }
 }
 
 export async function listFiles(): Promise<FileInfo[]> {
   try {
     const res = await fetch(`${API_URL}/files/`)
     if (!res.ok) throw new Error('API not ready')
+
     const data = await res.json()
     return data
   } catch (error) {
-    // Mock de fallback (para desenvolvimento sem backend)
+    console.warn('Using mock files due to error:', error)
+
+    // ✅ Mock fallback for development
     return [
       {
         filename: 'demo.pdf',

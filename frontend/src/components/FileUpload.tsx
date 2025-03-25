@@ -4,15 +4,18 @@ import { uploadFile } from '../services/api'
 export default function FileUpload() {
   const [file, setFile] = useState<File | null>(null)
   const [message, setMessage] = useState('')
+  const [isError, setIsError] = useState(false)
 
   const handleUpload = async () => {
     if (!file) return
     setMessage('Uploading...')
+    setIsError(false)
     try {
       await uploadFile(file)
-      setMessage('Upload successful!')
+      setMessage('✅ Upload successful!')
     } catch {
-      setMessage('Upload failed.')
+      setMessage('❌ Upload failed. Please try again.')
+      setIsError(true)
     }
   }
 
@@ -26,7 +29,11 @@ export default function FileUpload() {
       <button className="btn btn-primary btn-lg text-lg" onClick={handleUpload}>
         Upload
       </button>
-      {message && <div className="text-md">{message}</div>}
+      {message && (
+        <div className={`text-md ${isError ? 'text-error' : 'text-success'}`}>
+          {message}
+        </div>
+      )}
     </div>
   )
 }
