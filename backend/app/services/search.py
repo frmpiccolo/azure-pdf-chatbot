@@ -1,59 +1,60 @@
 import os
-import requests
-from app.services.embedding import get_embedding
 from dotenv import load_dotenv
+from typing import List
+from azure.core.credentials import AzureKeyCredential
+from azure.search.documents.aio import SearchClient
+from azure.search.documents.indexes.aio import SearchIndexClient
+from azure.search.documents.models import VectorizedQuery
+from app.services.openai import get_embedding
 
 load_dotenv()
 
-search_endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
-search_key = os.getenv("AZURE_SEARCH_KEY")
+endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
+key = os.getenv("AZURE_SEARCH_KEY")
 index_name = os.getenv("AZURE_SEARCH_INDEX")
 
-def query_vector_index(question: str) -> str:
-    embedding = get_embedding(question)
+credential = AzureKeyCredential(key)
 
-    url = f"{search_endpoint}/indexes/{index_name}/docs/search?api-version=2023-07-01-Preview"
-    headers = {
-        "Content-Type": "application/json",
-        "api-key": search_key
-    }
+async def index_document(doc_id: str, content: str, vector: List[float]):
+    async with SearchClient(endpoint=endpoint, index_name=index_name, credential=credential) as client:
+        document = {
+            "id": doc_id,
+            "content": content,
+            "contentVector": vector,
+        }
+        await client.upload_documents(documents=[document])
 
-    payload = {
-        "vector": {
-            "value": embedding,
-            "fields": "contentVector",
-            "k": 3
-        },
-        "select": "content"
-    }
+async def semantic_search(query: str) -> str:
+    async with SearchClient(endpoint=endpoint, index_name=index_name, credential=credential) as client:
+        results = await client.search(query, top=3)
+        chunks = []
+        async for result in results:
+            chunks.append(result["content"])
+        return "\n---\n".join(chunks)
 
-    response = requests.post(url, headers=headers, json=payload)
-    results = response.json()
+async def semantic_search_vector_based(query: str, top_k: int = 3) -> str:
+    embedding = await get_embedding(query)
 
-    hits = results.get("value", [])
-    context = "\n\n".join([hit["content"] for hit in hits])
-
-    return generate_answer(question, context)
-
-def generate_answer(question: str, context: str) -> str:
-    from openai import AzureOpenAI
-    client = AzureOpenAI(
-        api_key=os.getenv("AZURE_OPENAI_KEY"),
-        api_version="2023-05-15",
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    vector_query = VectorizedQuery(        
+        fields="contentVector",
+        vector=embedding,
+        k_nearest_neighbors=top_k
     )
 
-    system_message = (
-        "You are a helpful assistant answering questions based only on the provided context. "
-        "Do not guess. If the answer is not in the context, say you don't know."
-    )
+    async with SearchClient(endpoint=endpoint, index_name=index_name, credential=credential) as client:
+        results = await client.search(
+            vector_queries=[vector_query],
+            select=["content"]
+        )
 
-    completion = client.chat.completions.create(
-        deployment_id="gpt35",
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"}
-        ]
-    )
+        chunks = []
+        async for result in results:
+            chunks.append(result["content"])
 
-    return completion.choices[0].message.content.strip()
+        return "\n---\n".join(chunks)
+
+async def get_index_stats() -> str:
+    async with SearchIndexClient(endpoint=endpoint, credential=credential) as client:
+        result = await client.get_index_statistics(index_name)        
+        count = result["document_count"]
+        return f"{count} documents indexed"

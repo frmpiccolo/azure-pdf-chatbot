@@ -7,7 +7,12 @@ export default function FileUpload() {
   const [isError, setIsError] = useState(false)
 
   const handleUpload = async () => {
-    if (!file) return
+    console.log('🚀 Upload button clicked')
+    if (!file) {
+      setMessage('❌ Please select a file before uploading.')
+      setIsError(true)
+      return
+    }
     setMessage('Uploading...')
     setIsError(false)
     try {
@@ -25,6 +30,8 @@ export default function FileUpload() {
         type="file"
         onChange={(e) => setFile(e.target.files?.[0] || null)}
         className="file-input file-input-bordered w-full text-lg"
+        title="Upload your file"
+        placeholder="Choose a file"
       />
       <button className="btn btn-primary btn-lg text-lg" onClick={handleUpload}>
         Upload

@@ -1,0 +1,88 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.log
+*.sqlite3
+*.db
+*.tmp
+*.bak
+*.cover
+
+# Virtual environments
+env/
+venv/
+.venv/
+.venv/*
+/.venv
+/.venv/*
+**/.venv/
+**/.venv/*
+backend/.venv/
+backend/.venv/*
+instance/
+
+# === FastAPI / Backend ===
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.coverage
+backend/.DS_Store
+backend/*.log
+backend/*.db
+backend/.env
+backend/env/
+backend/venv/
+backend/.venv/
+
+# === Node.js / React / Frontend ===
+node_modules/
+dist/
+build/
+.npm/
+.npm-cache/
+.cache/
+.next/
+out/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.env
+frontend/.DS_Store
+
+# === VSCode ===
+.vscode/
+.history/
+
+# === System Files ===
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Environment Files ===
+.env
+.env.*
+!.env.example
+
+# === Azure ===
+.azure/
+*.publishsettings
+
+# === Coverage / Test ===
+coverage/
+.pytest_cache/
+
+# === Archives ===
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# === MacOS ===
+.DS_Store
+backend/.env

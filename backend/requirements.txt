@@ -1,6 +1,12 @@
 fastapi
 uvicorn
-python-dotenv
-openai
+aiofiles
+python-multipart
 PyPDF2
+openai>=1.0.0
+azure-search-documents
 azure-storage-blob
+python-dotenv
+aiohttp>=3.8.0
+azure-search-documents
+tiktoken
