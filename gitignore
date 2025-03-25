@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.env
+.venv/
+env/
+venv/
+instance/
+.env
+*.sqlite3
+*.log
+
+# FastAPI & general backend
+*.db
+*.bak
+*.tmp
+*.log
+.DS_Store
+
+# Node / React
+node_modules/
+dist/
+build/
+.npm/
+.npm-cache/
+.cache/
+.next/
+out/
+
+# VSCode
+.vscode/
+.history/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Environment files
+.env.*
+!.env.example
+
+# Azure deployment
+.azure/
+*.publishsettings
+
+# Misc
+*.zip
+*.tar.gz
+*.tgz
+coverage/
+*.cover
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/

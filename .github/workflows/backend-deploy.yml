@@ -1,0 +1,36 @@
+name: Build and Deploy Backend (Docker)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push Docker image
+        uses: azure/docker-login@v1
+        with:
+          login-server: <yourregistry>.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - run: |
+          docker build -t <yourregistry>.azurecr.io/azure-pdf-backend:latest ./backend
+          docker push <yourregistry>.azurecr.io/azure-pdf-backend:latest
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: azure-pdf-backend
+          images: <yourregistry>.azurecr.io/azure-pdf-backend:latest
