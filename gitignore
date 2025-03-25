@@ -9,7 +9,6 @@ __pycache__/
 env/
 venv/
 instance/
-.env
 *.sqlite3
 *.log
 
@@ -40,8 +39,11 @@ ehthumbs.db
 Desktop.ini
 
 # Environment files
+.env
 .env.*
 !.env.example
+backend/.env
+frontend/.env
 
 # Azure deployment
 .azure/
@@ -53,7 +55,4 @@ Desktop.ini
 *.tgz
 coverage/
 *.cover
-*.pyc
-*.pyo
-*.pyd
 .pytest_cache/

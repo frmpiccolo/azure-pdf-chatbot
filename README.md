@@ -14,17 +14,37 @@ This project demonstrates how to build a domain-specific chatbot using Azure AI 
 
 ```
 azure-pdf-chatbot/
-├── backend/                # FastAPI backend with Azure integration
-│   ├── app/                # Main app logic
-│   ├── scripts/            # Index creation and population scripts
-│   └── Dockerfile          # Docker image for backend
-├── frontend/               # React frontend for chat and upload
-│   └── Dockerfile          # Docker image for frontend
-├── deploy/                 # Scripts for provisioning Azure resources
-├── data/inputs/            # Sample PDF files
-├── .github/workflows/      # CI/CD pipelines for backend and frontend
-├── .env.example            # Sample environment variables
-└── README.md               # Project documentation
+├── backend/                   # FastAPI backend with Azure integration
+│   ├── app/                   # Main app logic
+│   ├── scripts/               # Index creation and population scripts
+│   └── Dockerfile             # Docker image for backend
+├── frontend/                  # React frontend for chat and upload
+│   ├── public/                # Static files
+│   └── src/
+│       ├── assets/            # Imagens, ícones, fontes
+│       ├── components/        # Componentes reutilizáveis (Button, Modal, ChatBox)
+│       ├── layouts/           # Estrutura de layout base (Header, Footer, Sidebar)
+│       ├── pages/             # Páginas principais (Upload, Chat, Dashboard)
+│       ├── services/          # apiService, helpers de HTTP
+│       ├── styles/            # Arquivos CSS e tailwind.css
+│       ├── themes/            # Configurações de temas do DaisyUI
+│       ├── types/             # Tipagens TypeScript (DTOs, Models)
+│       ├── utils/             # Funções auxiliares
+│       └── App.tsx
+│       └── main.tsx           # (ou index.tsx) ponto de entrada
+│   ├── .env
+│   ├── .eslintrc.js
+│   ├── .gitignore
+│   ├── postcss.config.js
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   ├── package.json
+│   └── Dockerfile                 # Docker image for frontend
+├── deploy/                    # Scripts for provisioning Azure resources
+├── data/inputs/               # Sample PDF files
+├── .github/workflows/         # CI/CD pipelines for backend and frontend
+├── .env.example               # Sample environment variables
+└── README.md                  # Project documentation
 ```
 
 ---

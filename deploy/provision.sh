@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Variables
-RESOURCE_GROUP="rg-pdf-chatbot"
+RESOURCE_GROUP="pdf-chatbot"
 LOCATION="eastus"
 STORAGE_ACCOUNT="pdfchatbotstorage$RANDOM"
 CONTAINER_NAME="pdf-files"
-SEARCH_SERVICE="pdfchatbotsearch$RANDOM"
+SEARCH_SERVICE="pdf-chatbot-cognitivesearch"
 SEARCH_INDEX="pdf-index"
-OPENAI_NAME="pdfchatbotopenai"
+OPENAI_NAME="pdf-chatbot-openai"
 DEPLOYMENT_NAME="gpt35"
 OPENAI_MODEL="gpt-35-turbo"
 OPENAI_VERSION="2023-05-15"
@@ -22,6 +22,31 @@ az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOU
 
 echo "🔍 Creating Azure Cognitive Search..."
 az search service create --name $SEARCH_SERVICE --resource-group $RESOURCE_GROUP --location $LOCATION --sku basic
+
+echo "📑 Creating search index with vector search..."
+curl -X PUT "https://$SEARCH_SERVICE.search.windows.net/indexes/$SEARCH_INDEX?api-version=2023-07-01-Preview" \
+  -H "Content-Type: application/json" \
+  -H "api-key: $(az search admin-key show --resource-group $RESOURCE_GROUP --service-name $SEARCH_SERVICE --query primaryKey -o tsv)" \
+  -d '{
+    "name": "'"$SEARCH_INDEX"'",
+    "fields": [
+      { "name": "id", "type": "Edm.String", "key": true, "searchable": false, "retrievable": true },
+      { "name": "content", "type": "Edm.String", "searchable": true, "retrievable": true },
+      { "name": "contentVector", "type": "Collection(Edm.Single)", "searchable": true, "retrievable": true, "vectorSearchDimensions": 1536, "vectorSearchConfiguration": "default" }
+    ],
+    "vectorSearch": {
+      "algorithmConfigurations": [
+        {
+          "name": "default",
+          "kind": "hnsw",
+          "hnswParameters": {
+            "m": 4,
+            "efConstruction": 400
+          }
+        }
+      ]
+    }
+  }'
 
 echo "🤖 Creating Azure OpenAI resource..."
 az cognitiveservices account create \
